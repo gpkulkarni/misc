@@ -1,0 +1,12 @@
+
+STEPS to build latest kernel on Thunderx2 borg/saber  boards.
+=============================================================
+
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+git checkout -b br-v4.13 v4.13
+git am addon-tx2/*
+cp tx2kernel-build/config_tx2 .config
+make -j224;make modules_install -j224;make install
+reboot to new kernel
+then compile qlogic new driver.
+

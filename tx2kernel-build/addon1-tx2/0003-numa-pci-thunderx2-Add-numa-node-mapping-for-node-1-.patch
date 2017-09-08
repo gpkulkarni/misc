@@ -1,0 +1,35 @@
+From 00e2038142fe68eb5ce9d61c59322267f619d310 Mon Sep 17 00:00:00 2001
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Date: Tue, 30 May 2017 14:51:01 +0530
+Subject: [PATCH 3/7] numa, pci, thunderx2: Add numa node mapping for node 1
+ pci devices.
+
+On ThunderX2, there is no ACPI mapping to map numa node to node 1 pci
+devices. Adding work-around in linux kernel to map numa_node to
+all pci devices.
+
+*** Donot upstream ***
+
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+---
+ drivers/pci/probe.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index c31310d..4953376 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1035,6 +1035,10 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max, int pass)
+ 			child = pci_add_new_bus(bus, dev, secondary);
+ 			if (!child)
+ 				goto out;
++			if(bus->number == 0 && dev->devfn == 0)
++				set_dev_node(&child->dev, 0);
++			if(bus->number == 0 && dev->devfn == 1)
++				set_dev_node(&child->dev, 1);
+ 			child->primary = primary;
+ 			pci_bus_insert_busn_res(child, secondary, subordinate);
+ 			child->bridge_ctl = bctl;
+-- 
+2.9.4
+
